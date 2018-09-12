@@ -5,14 +5,24 @@ class App extends Component {
 
 	constructor() {
 		super();
+		const myjokeslist ="";
+		if (localStorage.getItem("list")==null){
+			this.myjokeslist = [];                                  	/*se non ci sono barzellette salavate in local storage, assegno alla costante myjokeslist un array vuoto*/
+		}
+		else {
+			this.myjokeslist = JSON.parse(localStorage.getItem("list"))	/* altrimenti carico gli elementi presenti*/
+		}
 		this.state = {
 			newjoke:"",
-			myjokeslist: JSON.parse(localStorage.getItem("list"))       /*carico le barzellette salvate in local storage*/
+			myjokeslist: this.myjokeslist       /*carico le barzellette salvate in local storage*/
 		}
 	}
 	
-	componentDidMount() {            /* Genera barzelletta */
-        const url = "https://api.chucknorris.io/jokes/random";
+	componentDidMount() {            /* chiamo il metodo fetchdata */
+		this.fetchdata();
+    }
+	fetchdata (){						/* la funzione carica una nuova barzelletta ed aggiorna lo stato */
+		const url = "https://api.chucknorris.io/jokes/random";
 
         fetch(url)
             .then(result => result.json())
@@ -21,7 +31,8 @@ class App extends Component {
                     newjoke: result.value 
                 })
             });
-    }
+	}
+	
     render() {
 		return (
             <div className="container">
@@ -59,7 +70,7 @@ class App extends Component {
 		localStorage.setItem("list",JSON.stringify(myArray))
 	}
 	generate = () =>{       /* richiamo il metodo ComponentDidMount per scaricare una nuova barzelletta */
-		const random_joke = this.componentDidMount();
+		const random_joke = this.fetchdata();
 		this.setState({newjoke: random_joke})
 	}
 	
